@@ -14,7 +14,7 @@ build:
   skip: true  # [py<38]
   # skipping s390x as we do not have setproctitle package for this arch. Also, the current package 
   # will go to Snowflake-specific channel only, so there is no urgency to build it on s390x.
-  skip: true  # [s390x]
+  skip: true  # [linux and s390x]
   entry_points:
     - wandb=wandb.cli.cli:cli
     - wb=wandb.cli.cli:cli
@@ -25,18 +25,18 @@ requirements:
     - pip
     - wheel
     - python 
-    - setuptools      <64
+    - setuptools <64
   run:
-    - click           >=7.0,!=8.0.0
-    - docker-pycreds  >=0.4.0
-    - gitpython       >=1.0.0,!=3.1.29
+    - click >=7.0,!=8.0.0
+    - docker-pycreds >=0.4.0
+    - gitpython >=1.0.0,!=3.1.29
     - pathtools
-    - protobuf        >=3.20.3,!=4.21.0,<5
-    - psutil          >=5.0.0
+    - protobuf >=3.20.3,!=4.21.0,<5
+    - psutil >=5.0.0
     - python 
     - pyyaml
-    - requests        >=2.0.0,<3
-    - sentry-sdk      >=1.0.0
+    - requests >=2.0.0,<3
+    - sentry-sdk >=1.0.0
     - setproctitle
     - appdirs >=1.4.3
     - typing_extensions  # [py<310]
