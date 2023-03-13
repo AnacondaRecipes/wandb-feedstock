@@ -63,7 +63,7 @@ about:
     to track the performance of machine learning models and experiments over time, and to 
     collaborate with others on machine learning projects.
   doc_url: https://docs.wandb.ai/
-  dev_url: https://github.com/wandb/client
+  dev_url: https://github.com/wandb/wandb
 
 extra:
   recipe-maintainers:
