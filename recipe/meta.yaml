@@ -18,7 +18,7 @@ build:
   entry_points:
     - wandb=wandb.cli.cli:cli
     - wb=wandb.cli.cli:cli
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir --no-build-isolation -vvv
 
 requirements:
   host:
