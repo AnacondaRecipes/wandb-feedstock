@@ -21,14 +21,16 @@ build:
   script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir --no-build-isolation -vvv
 
 requirements:
+  build:
+    - go
+    - {{ compiler('rust') }}
+
   host:
     - pip
     - python
     - hatchling
     - typing_extensions
     - pytest
-    - go
-    - {{ compiler('rust') }}
 
   run:
     - click >=7.1,!=8.0.0
