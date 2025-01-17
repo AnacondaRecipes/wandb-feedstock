@@ -22,7 +22,11 @@ build:
 
 requirements:
   build:
+    # we use go directly because we do not have activation feedstocks
+    # therefore we can't use compiler('go') and we skip linting
+    # for should_use_compilers
     - go
+    - {{ compiler('c') }}
     - {{ compiler('rust') }}
 
   host:
@@ -83,3 +87,5 @@ extra:
     - andrewtruong
     - raubitsj
     - synapticarbors
+  skip-lints:
+    - should_use_compilers
