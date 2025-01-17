@@ -28,7 +28,7 @@ requirements:
     - typing_extensions
     - pytest
     - go
-    - rust
+    - {{ compiler('rust') }}
 
   run:
     - click >=7.1,!=8.0.0
