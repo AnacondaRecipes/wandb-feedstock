@@ -33,8 +33,8 @@ requirements:
     - pip
     - python
     - hatchling
-    - typing_extensions
-    - pytest
+    - setuptools
+    - typing-extensions 4.7
 
   run:
     - click >=7.1,!=8.0.0
@@ -44,11 +44,10 @@ requirements:
     - psutil >=5.0.0
     - python
     - sentry-sdk >=2.0.0
-    - setuptools
     - pyyaml
     - requests >=2.0.0,<3
     - setproctitle
-    - typing-extensions <5,>=4.4  # [py<312]
+    - typing-extensions >=4.4,<5  # [py<312]
     - platformdirs
     - pydantic >=2.6,<3
     - eval-type-backport  # [py<310]
