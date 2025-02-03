@@ -31,7 +31,8 @@ requirements:
     - python
     - hatchling
     - setuptools
-    - typing-extensions 4.7
+    # - typing-extensions 4.7  # for linter
+    - typing-extensions
 
   run:
     - click >=7.1,!=8.0.0
