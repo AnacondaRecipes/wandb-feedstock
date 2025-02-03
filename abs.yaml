@@ -1,4 +1,6 @@
-build_env_vars:
-  ANACONDA_ROCKET_ENABLE_PY313 : yes
+# build_env_vars:
+  # ANACONDA_ROCKET_ENABLE_PY313 : yes
 upload_channels:
+  - sfe1ed40
+channels:
   - sfe1ed40
