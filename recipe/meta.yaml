@@ -143,6 +143,8 @@ test:
     # ERROR tests/unit_tests/test_lib/test_hashutil.py::test_md5_file_hashes_on_mounted_filesystem[wandb_core-1kB]
     # ERROR tests/unit_tests/test_lib/test_hashutil.py::test_md5_file_hashes_on_mounted_filesystem[wandb_core-50kB]    
 
+    - rm tests/unit_tests/test_cli.py  # using docker
+
     - export GIT_PYTHON_REFRESH=quiet
     - pytest tests -v
 
