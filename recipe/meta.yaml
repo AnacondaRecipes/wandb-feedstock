@@ -173,14 +173,14 @@ test:
     - boto3
     - jax
     - openai
-    #DDD - tensorflow
+    # - tensorflow - not needed
     - gymnasium
     - torcheval  # for torch
     - tensorboard
     - google-cloud-storage
     # - stable-baselines3
     - tensorboardX
-    - polars
+    # - polars - not needed
     # - kubernetes-asyncio
     # - sweeps
     - bokeh
