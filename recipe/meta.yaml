@@ -13,9 +13,9 @@ build:
   number: 0
   # skip: true  # [py<38]
   skip: true  # [py<=39]  # temporarily for rdkit, which requires 3.10+
-  # skipping s390x as we do not have setproctitle package for this arch. Also, the current package 
-  # will go to Snowflake-specific channel only, so there is no urgency to build it on s390x.
-  skip: true  # [linux and s390x]
+  # # skipping s390x as we do not have setproctitle package for this arch. Also, the current package 
+  # # will go to Snowflake-specific channel only, so there is no urgency to build it on s390x.
+  # skip: true  # [linux and s390x]
   entry_points:
     - wandb=wandb.cli.cli:cli
     - wb=wandb.cli.cli:cli
@@ -61,93 +61,19 @@ test:
     - wandb --help
     - wb --help
 
-    # - rm tests/system_tests/test_artifacts/test_object_references.py  # moviepy
-    # - rm tests/system_tests/test_functional/test_tensorboard/test_tb_w_sb3.py  # stable_baseline3
-    # - rm tests/system_tests/test_launch/test_launch_kubernetes.py  # kubernetes_asyncio
-    # - rm tests/system_tests/test_launch/test_wandb_controller.py  # google-cloud-compute
-
-    - rm -rf tests/system_tests
-    # - rm tests/system_tests/test_functional/console/test_console.py  # google.cloud
-    # - rm tests/system_tests/test_importers/test_wandb/test_wandb.py
-    # - rm tests/system_tests/test_launch/test_launch_vertex.py
-
-    - rm -rf tests/unit_tests/test_launch
-    # - rm tests/unit_tests/test_launch/test_job.py
-    # - rm tests/unit_tests/test_launch/test_agent/test_agent.py
-    # - rm tests/unit_tests/test_launch/test_builder/test_kaniko.py
-    # - rm tests/unit_tests/test_launch/test_environment/test_azure.py
-    # - rm tests/unit_tests/test_launch/test_environment/test_gcp.py
-    # - rm tests/unit_tests/test_launch/test_registry/test_acr.py
-    # - rm tests/unit_tests/test_launch/test_registry/test_gcp_artifact_registry.py
-    # - rm tests/unit_tests/test_launch/test_runner/test_kubernetes.py
-    # - rm tests/unit_tests/test_launch/test_runner/test_safe_watch.py
-    # - rm tests/unit_tests/test_launch/test_runner/test_vertex.py
-    # - rm tests/unit_tests/test_lib/test_mailbox.py
-    # - rm tests/unit_tests/test_system_metrics/test_system_monitor.py
-
-    - rm tests/unit_tests/test_data_types.py  # moviepy
-
-    - rm tests/unit_tests/test_internal_api.py
-    # FAILED tests/unit_tests/test_internal_api.py::TestUploadFile::TestAzure::test_uses_azure_lib_if_available[no_wandb_core-request_headers1-True]
-    # FAILED tests/unit_tests/test_internal_api.py::TestUploadFile::TestAzure::test_uses_azure_lib_if_available[wandb_core-request_headers1-True]
-    # FAILED tests/unit_tests/test_internal_api.py::TestUploadFile::TestAzure::test_translates_azure_err_to_normal_err[no_wandb_core-response0-RequestException-<lambda>]
-    # FAILED tests/unit_tests/test_internal_api.py::TestUploadFile::TestAzure::test_translates_azure_err_to_normal_err[no_wandb_core-response1-TransientError-<lambda>]
-    # FAILED tests/unit_tests/test_internal_api.py::TestUploadFile::TestAzure::test_translates_azure_err_to_normal_err[wandb_core-response0-RequestException-<lambda>]
-    # FAILED tests/unit_tests/test_internal_api.py::TestUploadFile::TestAzure::test_translates_azure_err_to_normal_err[wandb_core-response1-TransientError-<lambda>]
-
+    - rm -rf tests/system_tests  # because of kubernetes_asyncio, stable_baseline3, google-cloud-compute and other deps
+    - rm -rf tests/unit_tests/test_launch  # because of Azure and gcp
+    - rm tests/unit_tests/test_data_types.py  # because of moviepy
+    - rm tests/unit_tests/test_internal_api.py  # because of TestAzure
     - rm tests/unit_tests/test_analytics/test_sentry.py
-    # FAILED tests/unit_tests/test_analytics/test_sentry.py::test_wandb_sentry_init_after_client_init[no_wandb_core]
-    # FAILED tests/unit_tests/test_analytics/test_sentry.py::test_wandb_sentry_init_after_client_init[wandb_core]
-    # FAILED tests/unit_tests/test_analytics/test_sentry.py::test_wandb_sentry_init_after_client_write[no_wandb_core]
-    # FAILED tests/unit_tests/test_analytics/test_sentry.py::test_wandb_sentry_init_after_client_write[wandb_core]
-    # FAILED tests/unit_tests/test_analytics/test_sentry.py::test_wandb_sentry_initialized_first[no_wandb_core]
-    # FAILED tests/unit_tests/test_analytics/test_sentry.py::test_wandb_sentry_initialized_first[wandb_core]
-    # FAILED tests/unit_tests/test_analytics/test_sentry.py::test_wandb_sentry_write_first[no_wandb_core]
-    # FAILED tests/unit_tests/test_analytics/test_sentry.py::test_wandb_sentry_write_first[wandb_core]
-    # FAILED tests/unit_tests/test_analytics/test_sentry.py::test_wandb_sentry_exception[no_wandb_core]
-    # FAILED tests/unit_tests/test_analytics/test_sentry.py::test_wandb_sentry_exception[wandb_core]
-    # FAILED tests/unit_tests/test_analytics/test_sentry.py::test_repeated_messages_does_not_call_sentry[no_wandb_core]
-    # FAILED tests/unit_tests/test_analytics/test_sentry.py::test_repeated_messages_does_not_call_sentry[wandb_core]
-    # FAILED tests/unit_tests/test_analytics/test_sentry.py::test_wandb_sentry_event_with_runtime_tags[no_wandb_core]
-    # FAILED tests/unit_tests/test_analytics/test_sentry.py::test_wandb_sentry_event_with_runtime_tags[wandb_core]
-
     - rm tests/unit_tests/test_lib/test_credentials.py
-    # FAILED tests/unit_tests/test_lib/test_credentials.py::test_refresh_credentials[no_wandb_core]
-    # FAILED tests/unit_tests/test_lib/test_credentials.py::test_refresh_credentials[wandb_core]
-
     - rm tests/unit_tests/test_media/test_media_logging.py
-    # FAILED tests/unit_tests/test_media/test_media_logging.py::test_log_media_saves_to_run_directory[no_wandb_core-image_media]
-    # FAILED tests/unit_tests/test_media/test_media_logging.py::test_log_media_saves_to_run_directory[no_wandb_core-video_media]
-    # FAILED tests/unit_tests/test_media/test_media_logging.py::test_log_media_saves_to_run_directory[no_wandb_core-audio_media]
-    # FAILED tests/unit_tests/test_media/test_media_logging.py::test_log_media_saves_to_run_directory[wandb_core-image_media]
-    # FAILED tests/unit_tests/test_media/test_media_logging.py::test_log_media_saves_to_run_directory[wandb_core-video_media]
-    # FAILED tests/unit_tests/test_media/test_media_logging.py::test_log_media_saves_to_run_directory[wandb_core-audio_media]
-    # FAILED tests/unit_tests/test_media/test_media_logging.py::test_log_media_with_path_traversal[no_wandb_core]
-    # FAILED tests/unit_tests/test_media/test_media_logging.py::test_log_media_with_path_traversal[wandb_core]
-    # FAILED tests/unit_tests/test_media/test_media_logging.py::test_log_media_prefixed_with_multiple_slashes[no_wandb_core-////image]
-    # FAILED tests/unit_tests/test_media/test_media_logging.py::test_log_media_prefixed_with_multiple_slashes[no_wandb_core-my///image]
-    # FAILED tests/unit_tests/test_media/test_media_logging.py::test_log_media_prefixed_with_multiple_slashes[wandb_core-////image]
-    # FAILED tests/unit_tests/test_media/test_media_logging.py::test_log_media_prefixed_with_multiple_slashes[wandb_core-my///image]
-
     - rm tests/unit_tests/test_system_metrics/test_open_metrics.py
-    # FAILED tests/unit_tests/test_system_metrics/test_open_metrics.py::test_dcgm[no_wandb_core]
-    # FAILED tests/unit_tests/test_system_metrics/test_open_metrics.py::test_dcgm[wandb_core]
-
     - rm tests/unit_tests/test_artifacts/test_storage.py
-    # ERROR tests/unit_tests/test_artifacts/test_storage.py::test_opener_works_across_filesystem_boundaries[no_wandb_core]
-    # ERROR tests/unit_tests/test_artifacts/test_storage.py::test_opener_works_across_filesystem_boundaries[wandb_core]
-
     - rm tests/unit_tests/test_lib/test_hashutil.py
-    # ERROR tests/unit_tests/test_lib/test_hashutil.py::test_md5_file_hashes_on_mounted_filesystem[no_wandb_core-1kB]
-    # ERROR tests/unit_tests/test_lib/test_hashutil.py::test_md5_file_hashes_on_mounted_filesystem[no_wandb_core-50kB]
-    # ERROR tests/unit_tests/test_lib/test_hashutil.py::test_md5_file_hashes_on_mounted_filesystem[wandb_core-1kB]
-    # ERROR tests/unit_tests/test_lib/test_hashutil.py::test_md5_file_hashes_on_mounted_filesystem[wandb_core-50kB]    
-
     - rm tests/unit_tests/test_cli.py  # using docker
-
-    - rm tests/unit_tests/test_lib/test_git.py  # something wrong with git
-
-    - export GIT_PYTHON_REFRESH=quiet
+    - rm tests/unit_tests/test_lib/test_git.py  # something wrong with git run
+    - export GIT_PYTHON_REFRESH=quiet  # [not win]
     - pytest tests -v
 
   requires:
@@ -155,40 +81,47 @@ test:
     - pip
     - pytest
     - pyte
-    - fastapi
-    - responses
-    - hypothesis  # ???
-    - mlflow  # ???
-    - plotly  # ???
-    - httpx
-    - uvicorn
-    # - rdkit
-    - filelock
-    - IPython
-    - nbformat
-    - nbclient
-    - pytest-timeout
-    - flaky
-    - pytest-asyncio
-    - boto3
-    - jax
-    - openai
-    # - tensorflow - not needed
-    - gymnasium
-    - torcheval  # for torch
-    - tensorboard
-    - google-cloud-storage
-    # - stable-baselines3
-    - tensorboardX
-    # - polars - not needed
-    # - kubernetes-asyncio
-    # - sweeps
-    - bokeh
-    - pyfakefs
-    - pytest-mock
-    - pytest-xdist
+    - hypothesis
+    - torcheval
     - parameterized
-    # - soundfile
+    - matplotlib
+    - tenacity
+    - tqdm
+    - plotly
+    - pytest-mock
+    - pandas
+    - scikit-learn
+
+
+    # - fastapi
+    # - responses
+    # - mlflow  # ???
+    # - httpx
+    # - uvicorn
+    # # - rdkit
+    # - filelock
+    # - IPython
+    # - nbformat
+    # - nbclient
+    # - pytest-timeout
+    # - flaky
+    # - pytest-asyncio
+    # - boto3
+    # - jax
+    # - openai
+    # # - tensorflow - not needed
+    # - gymnasium
+    # - tensorboard
+    # - google-cloud-storage
+    # # - stable-baselines3
+    # - tensorboardX
+    # # - polars - not needed
+    # # - kubernetes-asyncio
+    # # - sweeps
+    # - bokeh
+    # - pyfakefs
+    # - pytest-xdist
+    # # - soundfile
 
     # - pytest >=7.4, <8
     # - pytest-asyncio >=0.21.2, <0.22
@@ -211,13 +144,6 @@ test:
 
     # - uvicorn >=0.32.0, <0.33
     # - coverage[toml] >=7.2, <8
-    # ### - pyte >=0.8.1  # Terminal emulator for testing interactions with the terminal.
-    # - pyte
-
-    # - pandas >=2.2, <3  # [py >=311]
-    # - numpy >=1.26, <2  # [py >=311]
-    # - pandas >=1.3, <2  # [py <311]
-    # - numpy >=1.24, <2  # [py <311]
 
 about:
   home: https://wandb.ai/site
