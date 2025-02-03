@@ -12,7 +12,7 @@ source:
 build:
   number: 0
   # skip: true  # [py<38]
-  skip: true  # [py<310]  # temporarily for rdkit, which requires 3.10+
+  skip: true  # [py<=39]  # temporarily for rdkit, which requires 3.10+
   # skipping s390x as we do not have setproctitle package for this arch. Also, the current package 
   # will go to Snowflake-specific channel only, so there is no urgency to build it on s390x.
   skip: true  # [linux and s390x]
@@ -160,7 +160,7 @@ test:
     - plotly  # ???
     - httpx
     - uvicorn
-    - rdkit
+    # - rdkit
     - filelock
     - IPython
     - nbformat
