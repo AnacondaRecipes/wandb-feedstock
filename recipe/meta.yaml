@@ -30,7 +30,6 @@ requirements:
     - python
     - hatchling
     - setuptools
-    # - typing-extensions 4.7  # for linter
     - typing-extensions
 
   run:
@@ -59,6 +58,8 @@ test:
     - wandb --help
     - wb --help
 
+    # here we remove all the tests which are out of scope of build, mostly because they're integrational
+    # and/or require packages we don't have or running docker etc etc
     - rm -rf tests/system_tests  # because of kubernetes_asyncio, stable_baseline3, google-cloud-compute and other deps
     - rm -rf tests/unit_tests/test_launch  # because of Azure and gcp
     - rm tests/unit_tests/test_data_types.py  # because of moviepy
@@ -70,7 +71,7 @@ test:
     - rm tests/unit_tests/test_artifacts/test_storage.py
     - rm tests/unit_tests/test_lib/test_hashutil.py
     - rm tests/unit_tests/test_cli.py  # using docker
-    - rm tests/unit_tests/test_lib/test_git.py  # something wrong with git run
+    - rm tests/unit_tests/test_lib/test_git.py
     - export GIT_PYTHON_REFRESH=quiet  # [not win]
     - pytest tests -v
 
