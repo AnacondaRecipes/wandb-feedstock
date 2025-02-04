@@ -21,7 +21,10 @@ build:
 
 requirements:
   build:
-    - {{ compiler('go-cgo') }}
+    # for some reason, on osx cleanup from 'go-cgo' compiler fails,
+    # causing failure of the whole build
+    - {{ compiler('go-cgo') }}  # [not osx]
+    - go # [osx]
     - {{ compiler('c') }}
     - {{ compiler('rust') }}
 
@@ -115,3 +118,5 @@ extra:
     - andrewtruong
     - raubitsj
     - synapticarbors
+  skip-lints:
+    - should_use_compilers  # [not osx]
