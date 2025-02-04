@@ -119,4 +119,4 @@ extra:
     - raubitsj
     - synapticarbors
   skip-lints:
-    - should_use_compilers  # [not osx]
+    - should_use_compilers
