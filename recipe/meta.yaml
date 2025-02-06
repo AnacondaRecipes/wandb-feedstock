@@ -61,27 +61,58 @@ test:
     - wandb --help
     - wb --help
 
-    # here we remove all the tests which are out of scope of build, mostly because they're integrational
-    # and/or require packages we don't have or running docker etc etc
-    - rm -rf tests/system_tests  # because of kubernetes_asyncio, stable_baseline3, google-cloud-compute and other deps
-    - rm -rf tests/unit_tests/test_launch  # because of Azure and gcp
-    - rm tests/unit_tests/test_data_types.py  # because of moviepy
-    - rm tests/unit_tests/test_internal_api.py  # because of TestAzure
-    - rm tests/unit_tests/test_analytics/test_sentry.py
-    - rm tests/unit_tests/test_lib/test_credentials.py
-    - rm tests/unit_tests/test_media/test_media_logging.py
-    - rm tests/unit_tests/test_system_metrics/test_open_metrics.py
-    - rm tests/unit_tests/test_artifacts/test_storage.py
-    - rm tests/unit_tests/test_lib/test_hashutil.py
-    - rm tests/unit_tests/test_cli.py  # using docker
-    - rm tests/unit_tests/test_lib/test_git.py
+    # ignoring integration tests (those has a lot of dependencies we don't have like azure, kubernetes, google-cloud,
+    # although keeping unit tests
+    {% set ignore_tests = " --ignore=tests/system_tests" %}
+    {% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_launch" %}
+
+    # requires 'moviepy'
+    {% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_data_types.py" %}
+
+    # requres 'pytest-memray'
+    {% set skip_tests = "test_opener_works_across_filesystem_boundaries" %}
+    {% set skip_tests = skip_tests + " or test_md5_file_hashes_on_mounted_filesystem" %}
+
+    # requires 'azure'
+    {% set skip_tests = skip_tests + " or TestAzure" %}
+
+    # sentry usage requires API key
+    {% set skip_tests = skip_tests + " or test_wandb_sentry_init_after_client_init" %}
+    {% set skip_tests = skip_tests + " or test_wandb_sentry_init_after_client_write" %}
+    {% set skip_tests = skip_tests + " or test_wandb_sentry_initialized_first" %}
+    {% set skip_tests = skip_tests + " or test_wandb_sentry_write_first" %}
+    {% set skip_tests = skip_tests + " or test_wandb_sentry_exception" %}
+    {% set skip_tests = skip_tests + " or test_repeated_messages_does_not_call_sentry" %}
+    {% set skip_tests = skip_tests + " or test_wandb_sentry_event_with_runtime_tags" %}
+
+    # >           assert res == new_credentials["access_token"]
+    # E           AssertionError: assert 'wb_at_39fdjsaknasd' == 'wb_at_kdflfo432'
+    {% set skip_tests = skip_tests + " or test_refresh_credentials" %}
+
+    # ERROR    wandb.sdk.internal.internal_api:internal_api.py:397 401 response executing GraphQL.
+    # ERROR    wandb.sdk.internal.internal_api:internal_api.py:398 {"error":"Token is inactive because it is malformed, expired or otherwise invalid. Token validation failed."}
+    # requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://api.wandb.ai/graphql
+    {% set skip_tests = skip_tests + " or test_log_media_saves_to_run_directory" %}
+    {% set skip_tests = skip_tests + " or test_dcgm" %}
+    {% set skip_tests = skip_tests + " or test_log_media_prefixed_with_multiple_slashes" %}
+
+    # requires 'soundfile'
+    {% set skip_tests = skip_tests + " or test_log_media_with_path_traversal" %}
+
     - export GIT_PYTHON_REFRESH=quiet  # [not win]
-    - pytest tests -v
+    - pytest tests -v -k "not ({{ skip_tests }})" {{ ignore_tests }}
 
   requires:
     - python
     - pip
     - pytest
+    - pytest-timeout
+    - pytest-asyncio
+    - pytest-mock
+    - pytest-xdist
+    - pytest-cov
+    - pytest-flakefinder
+    - pyfakefs
     - pyte
     - hypothesis
     - torcheval
@@ -93,6 +124,10 @@ test:
     - pytest-mock
     - pandas
     - scikit-learn
+    - responses
+    - flask
+    - bokeh
+    - rdkit
 
 about:
   home: https://wandb.ai/site
