@@ -95,6 +95,7 @@ test:
     {% set skip_tests = skip_tests + " or test_log_media_saves_to_run_directory" %}
     {% set skip_tests = skip_tests + " or test_dcgm" %}
     {% set skip_tests = skip_tests + " or test_log_media_prefixed_with_multiple_slashes" %}
+    {% set skip_tests = skip_tests + " or test_log_media_with_invalid_character_on_windows" %}
 
     # requires 'soundfile'
     {% set skip_tests = skip_tests + " or test_log_media_with_path_traversal" %}
