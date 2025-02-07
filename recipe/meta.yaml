@@ -1,56 +1,135 @@
 {% set name = "wandb" %}
-{% set version = "0.15.8" %}
+{% set version = "0.19.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/wandb-{{ version }}.tar.gz
-  sha256: 2c39e129fb8dc69c7ff813aa52c2ce7f98e3a0f25c12dd96b1de7528d9443a84
+  url: https://github.com/{{ name }}/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
+  sha256: f860af2bcb29c83e41729557aa9519e3cc5264c9bccc05e32d6f77b91c264ba1
 
 build:
   number: 0
   skip: true  # [py<38]
-  # skipping s390x as we do not have setproctitle package for this arch. Also, the current package 
-  # will go to Snowflake-specific channel only, so there is no urgency to build it on s390x.
+  # we don't have 'go-cgo' compiler for s390x
   skip: true  # [linux and s390x]
   entry_points:
     - wandb=wandb.cli.cli:cli
     - wb=wandb.cli.cli:cli
-  script: {{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir --no-build-isolation -vvv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation
 
 requirements:
+  build:
+    # for some reason, on osx cleanup from 'go-cgo' compiler fails,
+    # causing failure of the whole build
+    - {{ compiler('go-cgo') }}  # [not osx]
+    - go # [osx]
+    - {{ compiler('c') }}
+    - {{ compiler('rust') }}
+
   host:
     - pip
-    - wheel
-    - python 
+    - python
+    - hatchling
     - setuptools
-    
+    - typing-extensions
+
   run:
     - click >=7.1,!=8.0.0
     - docker-pycreds >=0.4.0
     - gitpython >=1.0.0,!=3.1.29
-    - pathtools
-    - protobuf >=3.20.3,!=4.21.0,<5
+    - protobuf >=3.15.0,!=4.21.0,!=5.28.0,<6 # [linux and py==39]
+    - protobuf >=3.19.0,!=4.21.0,!=5.28.0,<6 # [(not linux) or py>39]
     - psutil >=5.0.0
-    - python 
+    - python
+    - sentry-sdk >=2.0.0
     - pyyaml
     - requests >=2.0.0,<3
-    - sentry-sdk >=1.0.0
     - setproctitle
-    - appdirs >=1.4.3
-    - typing_extensions  # [py<310]
+    - typing-extensions >=4.4,<5  # [py<312]
+    - platformdirs
+    - pydantic >=2.6,<3
+    - eval-type-backport  # [py<310]
 
 test:
+  source_files:
+    - tests
   imports:
     - wandb
   commands:
     - pip check
     - wandb --help
     - wb --help
+
+    # ignoring integration tests (those has a lot of dependencies we don't have like azure, kubernetes, google-cloud,
+    # although keeping unit tests
+    {% set ignore_tests = " --ignore=tests/system_tests" %}
+    {% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_launch" %}
+
+    # requires 'moviepy'
+    {% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_data_types.py" %}
+
+    # requres 'pytest-memray'
+    {% set skip_tests = "test_opener_works_across_filesystem_boundaries" %}
+    {% set skip_tests = skip_tests + " or test_md5_file_hashes_on_mounted_filesystem" %}
+
+    # requires 'azure'
+    {% set skip_tests = skip_tests + " or TestAzure" %}
+
+    # sentry usage requires API key
+    {% set skip_tests = skip_tests + " or test_wandb_sentry_init_after_client_init" %}
+    {% set skip_tests = skip_tests + " or test_wandb_sentry_init_after_client_write" %}
+    {% set skip_tests = skip_tests + " or test_wandb_sentry_initialized_first" %}
+    {% set skip_tests = skip_tests + " or test_wandb_sentry_write_first" %}
+    {% set skip_tests = skip_tests + " or test_wandb_sentry_exception" %}
+    {% set skip_tests = skip_tests + " or test_repeated_messages_does_not_call_sentry" %}
+    {% set skip_tests = skip_tests + " or test_wandb_sentry_event_with_runtime_tags" %}
+
+    # >           assert res == new_credentials["access_token"]
+    # E           AssertionError: assert 'wb_at_39fdjsaknasd' == 'wb_at_kdflfo432'
+    {% set skip_tests = skip_tests + " or test_refresh_credentials" %}
+
+    # ERROR    wandb.sdk.internal.internal_api:internal_api.py:397 401 response executing GraphQL.
+    # ERROR    wandb.sdk.internal.internal_api:internal_api.py:398 {"error":"Token is inactive because it is malformed, expired or otherwise invalid. Token validation failed."}
+    # requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://api.wandb.ai/graphql
+    {% set skip_tests = skip_tests + " or test_log_media_saves_to_run_directory" %}
+    {% set skip_tests = skip_tests + " or test_dcgm" %}
+    {% set skip_tests = skip_tests + " or test_log_media_prefixed_with_multiple_slashes" %}
+    {% set skip_tests = skip_tests + " or test_log_media_with_invalid_character_on_windows" %}
+
+    # requires 'soundfile'
+    {% set skip_tests = skip_tests + " or test_log_media_with_path_traversal" %}
+
+    - export GIT_PYTHON_REFRESH=quiet  # [not win]
+    - pytest tests -v -k "not ({{ skip_tests }})" {{ ignore_tests }}
+
   requires:
+    - python
     - pip
+    - pytest
+    - pytest-timeout
+    - pytest-asyncio
+    - pytest-mock
+    - pytest-xdist
+    - pytest-cov
+    - pytest-flakefinder
+    - pyfakefs
+    - pyte
+    - hypothesis
+    - pytorch
+    - parameterized
+    - matplotlib
+    - tenacity
+    - tqdm
+    - plotly
+    - pandas
+    - scikit-learn
+    - responses
+    - flask
+    - bokeh
+    - rdkit
+    - git
 
 about:
   home: https://wandb.ai/site
@@ -76,3 +155,5 @@ extra:
     - andrewtruong
     - raubitsj
     - synapticarbors
+  skip-lints:
+    - should_use_compilers

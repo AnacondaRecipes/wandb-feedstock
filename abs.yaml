@@ -1,4 +1,5 @@
+# python 3.13 not enabled because of torcheval not available for 3.13
+# build_env_vars:
+#   ANACONDA_ROCKET_ENABLE_PY313 : yes
 upload_channels:
-  - sfe1ed40
-channels:
   - sfe1ed40
