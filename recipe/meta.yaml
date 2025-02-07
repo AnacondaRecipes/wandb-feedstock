@@ -39,7 +39,8 @@ requirements:
     - click >=7.1,!=8.0.0
     - docker-pycreds >=0.4.0
     - gitpython >=1.0.0,!=3.1.29
-    - protobuf >=3.19.0,!=4.21.0,!=5.28.0,<6
+    - protobuf >=3.15.0,!=4.21.0,!=5.28.0,<6 # [linux and py==39]
+    - protobuf >=3.19.0,!=4.21.0,!=5.28.0,<6 # [py>39]
     - psutil >=5.0.0
     - python
     - sentry-sdk >=2.0.0
