@@ -116,7 +116,7 @@ test:
     - pyfakefs
     - pyte
     - hypothesis
-    - torcheval
+    - pytorch
     - parameterized
     - matplotlib
     - tenacity
