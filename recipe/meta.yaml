@@ -83,7 +83,8 @@ requirements:
 {% set skip_tests = skip_tests + " or test_handles_multiple_calls" %}
 {% set skip_tests = skip_tests + " or test_rewinds_on_failure" %}
 {% set skip_tests = skip_tests + " or test_run_urls" %}
-
+# E   FileNotFoundError: [Errno 2] No such file or directory: '\\tmp\\0.3487656377472621'
+{% set skip_tests = skip_tests + " or test_finishes_after_simple_upload" %}  # [win]
 
 test:
   source_files:
