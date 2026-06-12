@@ -53,6 +53,11 @@ requirements:
 {% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_launch" %}
 # requires 'moviepy'
 {% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_data_types.py" %}
+# requires 'kfp' (not available on defaults)
+{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_kfp.py" %}
+# requires 'looptime' (not available on defaults)
+{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_lib/test_ratelimit.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_lib/test_run_messages.py" %}
 # requres 'pytest-memray'
 {% set skip_tests = "test_opener_works_across_filesystem_boundaries" %}
 {% set skip_tests = skip_tests + " or test_md5_file_hashes_on_mounted_filesystem" %}
