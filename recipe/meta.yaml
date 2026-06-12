@@ -58,6 +58,8 @@ requirements:
 # requires 'looptime' (not available on defaults)
 {% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_lib/test_ratelimit.py" %}
 {% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_lib/test_run_messages.py" %}
+# requires 'cwsandbox' (sandbox extra, not available on defaults)
+{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_sandbox" %}
 # requres 'pytest-memray'
 {% set skip_tests = "test_opener_works_across_filesystem_boundaries" %}
 {% set skip_tests = skip_tests + " or test_md5_file_hashes_on_mounted_filesystem" %}
