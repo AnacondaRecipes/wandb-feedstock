@@ -1,5 +1,5 @@
 {% set name = "wandb" %}
-{% set version = "0.25.1" %}
+{% set version = "0.27.2" %}
 
 package:
   name: {{ name }}
@@ -7,21 +7,22 @@ package:
 
 source:
   url: https://github.com/{{ name }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: bf823077098c31abce58abe680acf6b043ea3f96006e80c995dcb26160074449
+  sha256: ac7c70b8985c824e62f5bd3294e7bc5a57747de5ef7a298e7e071de185bcf485
 
 build:
   number: 0
   entry_points:
     - wandb=wandb.cli.cli:cli
     - wb=wandb.cli.cli:cli
-  # No rdkit and libboost-python-devel for py314
-  skip: true  # [py<39 or py>313]
+  # Lower bound: upstream requires-python >=3.10
+  # Upper bound: no rdkit (test dependency) for py314 yet
+  skip: true  # [py<310 or py>313]
 
 requirements:
   build:
-    # Selector is not work
-    #- {{ compiler('go-cgo') }}
-    - go-cgo 1.25.8
+    # {{ compiler('go-cgo') }} resolves to CBC cgo_compiler_version 1.21,
+    # too old for core/go.mod which requires go 1.26.4
+    - go-cgo 1.26.4
     - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('rust') }}
@@ -35,16 +36,15 @@ requirements:
     - typing-extensions
   run:
     - python
-    - click >=8.0.1
+    - click >=8.2.0
     - gitpython >=1.0.0,!=3.1.29
     - requests >=2.0.0,<3
     - sentry-sdk >=2.0.0
-    - protobuf >4.21.0,<7,!=5.28.0,!=5.29.0
+    - protobuf >4.21.0,<8,!=5.28.0,!=5.29.0
     - pyyaml
     - platformdirs
     - typing-extensions >=4.8,<5
-    - pydantic <3
-    - eval-type-backport  # [py<310]
+    - pydantic >=2.6,<3
     - packaging
 
 # ignoring integration tests (those has a lot of dependencies we don't have like azure, kubernetes, google-cloud,
@@ -130,7 +130,8 @@ about:
   license: MIT
   license_family: MIT
   license_file:
-    - THIRDPARTY.yml
+    - THIRDPARTY_XPU.yml
+    - THIRDPARTY_PARQUET.yml
     - LICENSE
   summary: A CLI and library for interacting with the Weights and Biases API.
   description:  |
