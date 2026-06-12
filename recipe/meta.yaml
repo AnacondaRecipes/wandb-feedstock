@@ -103,6 +103,9 @@ test:
     - wandb --help
     - wb --help
     - export GIT_PYTHON_REFRESH=quiet  # [not win]
+    # tempdir-fallback tests write to $TMPDIR/wandb; a stale /tmp/wandb owned by
+    # another task's user on reused workers makes that a PermissionError
+    - export TMPDIR=$(mktemp -d)  # [not win]
     - pytest tests -v -k "not ({{ skip_tests }})" {{ ignore_tests }}
   requires:
     - python

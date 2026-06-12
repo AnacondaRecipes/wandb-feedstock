@@ -2,17 +2,25 @@
 
 set -o xtrace -o nounset -o pipefail -o errexit
 
-# crates.io index downloads flake on CI workers ("curl failed: Transferred a
-# partial file"); raise cargo's built-in network retry count
-export CARGO_NET_RETRY=10
+# crates.io downloads flake on CI workers ("curl failed: Transferred a partial
+# file") and cargo doesn't retry that error itself; retry at the shell level
+retry() {
+    local attempt
+    for attempt in 1 2 3; do
+        "$@" && return 0
+        echo "attempt ${attempt} failed: $*" >&2
+        sleep 15
+    done
+    return 1
+}
 
 # Bundle Rust licenses for xpu (formerly gpu_stats) and parquet-rust-wrapper
 pushd xpu
-cargo-bundle-licenses --format yaml --output ../THIRDPARTY_XPU.yml
+retry cargo-bundle-licenses --format yaml --output ../THIRDPARTY_XPU.yml
 popd
 
 pushd parquet-rust-wrapper
-cargo-bundle-licenses --format yaml --output ../THIRDPARTY_PARQUET.yml
+retry cargo-bundle-licenses --format yaml --output ../THIRDPARTY_PARQUET.yml
 popd
 
 # Unset CARGO_BUILD_TARGET: conda's rust compiler activation sets it, but
