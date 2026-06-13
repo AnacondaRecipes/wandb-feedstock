@@ -1,7 +1,12 @@
 @echo on
 
-PUSHD gpu_stats
-cargo-bundle-licenses --format yaml --output ../THIRDPARTY.yml || goto :error
+REM Bundle Rust licenses for xpu (formerly gpu_stats) and parquet-rust-wrapper
+PUSHD xpu
+cargo-bundle-licenses --format yaml --output ../THIRDPARTY_XPU.yml || goto :error
+POPD
+
+PUSHD parquet-rust-wrapper
+cargo-bundle-licenses --format yaml --output ../THIRDPARTY_PARQUET.yml || goto :error
 POPD
 
 %PYTHON% -m pip install --no-deps --no-build-isolation -vv .
