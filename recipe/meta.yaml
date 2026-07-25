@@ -10,13 +10,13 @@ source:
   sha256: ac7c70b8985c824e62f5bd3294e7bc5a57747de5ef7a298e7e071de185bcf485
 
 build:
-  number: 0
+  number: 1
   entry_points:
     - wandb=wandb.cli.cli:cli
     - wb=wandb.cli.cli:cli
-  # Lower bound: upstream requires-python >=3.10
-  # Upper bound: no rdkit (test dependency) for py314 yet
-  skip: true  # [py<310 or py>313]
+  # Lower bound: upstream requires-python >=3.10. rdkit (a test-only dep) has no
+  # py3.14 build, so on py3.14 rdkit is dropped and its one test file is ignored.
+  skip: true  # [py<310]
 
 requirements:
   build:
@@ -60,6 +60,8 @@ requirements:
 {% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_lib/test_run_messages.py" %}
 # requires 'cwsandbox' (sandbox extra, not available on defaults)
 {% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_sandbox" %}
+# module-level `from rdkit import Chem`; rdkit has no py3.14 build on defaults
+{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_media/test_media_logging.py" %}  # [py>313]
 # requres 'pytest-memray'
 {% set skip_tests = "test_opener_works_across_filesystem_boundaries" %}
 {% set skip_tests = skip_tests + " or test_md5_file_hashes_on_mounted_filesystem" %}
@@ -131,7 +133,7 @@ test:
     - responses
     - flask
     - bokeh
-    - rdkit
+    - rdkit  # [py<314]
     - git
     - cloudpickle
 
