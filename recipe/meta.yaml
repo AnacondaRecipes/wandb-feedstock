@@ -1,16 +1,63 @@
 {% set name = "wandb" %}
-{% set version = "0.27.2" %}
+{% set version = "0.30.0" %}
+{% set ignore_tests = " --ignore=tests/system_tests" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_launch" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_data_types.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_kfp.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_lib/test_ratelimit.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_lib/test_run_messages.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_sandbox" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_media/test_media_logging.py" %}  # [py>313]
+{% set skip_tests = "test_opener_works_across_filesystem_boundaries" %}
+{% set skip_tests = skip_tests + " or test_md5_file_hashes_on_mounted_filesystem" %}
+{% set skip_tests = skip_tests + " or TestAzure" %}
+{% set skip_tests = skip_tests + " or test_wandb_sentry_init_after_client_init" %}
+{% set skip_tests = skip_tests + " or test_wandb_sentry_init_after_client_write" %}
+{% set skip_tests = skip_tests + " or test_wandb_sentry_initialized_first" %}
+{% set skip_tests = skip_tests + " or test_wandb_sentry_write_first" %}
+{% set skip_tests = skip_tests + " or test_wandb_sentry_exception" %}
+{% set skip_tests = skip_tests + " or test_repeated_messages_does_not_call_sentry" %}
+{% set skip_tests = skip_tests + " or test_wandb_sentry_event_with_runtime_tags" %}
+{% set skip_tests = skip_tests + " or test_refresh_credentials" %}
+{% set skip_tests = skip_tests + " or test_log_media_saves_to_run_directory" %}
+{% set skip_tests = skip_tests + " or test_dcgm" %}
+{% set skip_tests = skip_tests + " or test_log_media_prefixed_with_multiple_slashes" %}
+{% set skip_tests = skip_tests + " or test_log_media_with_invalid_character_on_windows" %}
+{% set skip_tests = skip_tests + " or test_log_media_with_path_traversal" %}
+{% set skip_tests = skip_tests + " or test_smoke" %}
+{% set skip_tests = skip_tests + " or test_handles_multiple_calls" %}
+{% set skip_tests = skip_tests + " or test_rewinds_on_failure" %}
+{% set skip_tests = skip_tests + " or test_run_urls" %}
+{% set skip_tests = skip_tests + " or test_finishes_after_simple_upload" %}  # [win]
 
+# ignoring integration tests (those has a lot of dependencies we don't have like azure, kubernetes, google-cloud,
+# although keeping unit tests
+# requires 'moviepy'
+# requires 'kfp' (not available on defaults)
+# requires 'looptime' (not available on defaults)
+# requires 'cwsandbox' (sandbox extra, not available on defaults)
+# module-level `from rdkit import Chem`; rdkit has no py3.14 build on defaults
+# requres 'pytest-memray'
+# requires 'azure'
+# sentry usage requires API key
+# >           assert res == new_credentials["access_token"]
+# E           AssertionError: assert 'wb_at_39fdjsaknasd' == 'wb_at_kdflfo432'
+# ERROR    wandb.sdk.internal.internal_api:internal_api.py:397 401 response executing GraphQL.
+# ERROR    wandb.sdk.internal.internal_api:internal_api.py:398 {"error":"Token is inactive because it is malformed, expired or otherwise invalid. Token validation failed."}
+# requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://api.wandb.ai/graphql
+# requires 'soundfile'
+# E   AttributeError: 'bytes' object has no attribute 'read'
+# E   FileNotFoundError: [Errno 2] No such file or directory: '\\tmp\\0.3487656377472621'
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://github.com/{{ name }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: ac7c70b8985c824e62f5bd3294e7bc5a57747de5ef7a298e7e071de185bcf485
+  sha256: 755258ae8edc891518b5b2d2f47c33f855c1f263e28fdf5317673eb0f153c341
 
 build:
-  number: 1
+  number: 0
   entry_points:
     - wandb=wandb.cli.cli:cli
     - wb=wandb.cli.cli:cli
@@ -32,68 +79,34 @@ requirements:
     - pip
     - python
     - hatchling
-    - setuptools
     - typing-extensions
+    - typing_extensions
   run:
     - python
     - click >=8.2.0
     - gitpython >=1.0.0,!=3.1.29
     - requests >=2.0.0,<3
     - sentry-sdk >=2.0.0
-    - protobuf >4.21.0,<8,!=5.28.0,!=5.29.0
+    - protobuf >=5,!=5.28.0,!=5.29.0,<8
     - pyyaml
     - platformdirs
     - typing-extensions >=4.8,<5
     - pydantic >=2.6,<3
     - packaging
-
-# ignoring integration tests (those has a lot of dependencies we don't have like azure, kubernetes, google-cloud,
-# although keeping unit tests
-{% set ignore_tests = " --ignore=tests/system_tests" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_launch" %}
-# requires 'moviepy'
-{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_data_types.py" %}
-# requires 'kfp' (not available on defaults)
-{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_kfp.py" %}
-# requires 'looptime' (not available on defaults)
-{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_lib/test_ratelimit.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_lib/test_run_messages.py" %}
-# requires 'cwsandbox' (sandbox extra, not available on defaults)
-{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_sandbox" %}
-# module-level `from rdkit import Chem`; rdkit has no py3.14 build on defaults
-{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_media/test_media_logging.py" %}  # [py>313]
-# requres 'pytest-memray'
-{% set skip_tests = "test_opener_works_across_filesystem_boundaries" %}
-{% set skip_tests = skip_tests + " or test_md5_file_hashes_on_mounted_filesystem" %}
-# requires 'azure'
-{% set skip_tests = skip_tests + " or TestAzure" %}
-# sentry usage requires API key
-{% set skip_tests = skip_tests + " or test_wandb_sentry_init_after_client_init" %}
-{% set skip_tests = skip_tests + " or test_wandb_sentry_init_after_client_write" %}
-{% set skip_tests = skip_tests + " or test_wandb_sentry_initialized_first" %}
-{% set skip_tests = skip_tests + " or test_wandb_sentry_write_first" %}
-{% set skip_tests = skip_tests + " or test_wandb_sentry_exception" %}
-{% set skip_tests = skip_tests + " or test_repeated_messages_does_not_call_sentry" %}
-{% set skip_tests = skip_tests + " or test_wandb_sentry_event_with_runtime_tags" %}
-# >           assert res == new_credentials["access_token"]
-# E           AssertionError: assert 'wb_at_39fdjsaknasd' == 'wb_at_kdflfo432'
-{% set skip_tests = skip_tests + " or test_refresh_credentials" %}
-# ERROR    wandb.sdk.internal.internal_api:internal_api.py:397 401 response executing GraphQL.
-# ERROR    wandb.sdk.internal.internal_api:internal_api.py:398 {"error":"Token is inactive because it is malformed, expired or otherwise invalid. Token validation failed."}
-# requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://api.wandb.ai/graphql
-{% set skip_tests = skip_tests + " or test_log_media_saves_to_run_directory" %}
-{% set skip_tests = skip_tests + " or test_dcgm" %}
-{% set skip_tests = skip_tests + " or test_log_media_prefixed_with_multiple_slashes" %}
-{% set skip_tests = skip_tests + " or test_log_media_with_invalid_character_on_windows" %}
-# requires 'soundfile'
-{% set skip_tests = skip_tests + " or test_log_media_with_path_traversal" %}
-# E   AttributeError: 'bytes' object has no attribute 'read'
-{% set skip_tests = skip_tests + " or test_smoke" %}
-{% set skip_tests = skip_tests + " or test_handles_multiple_calls" %}
-{% set skip_tests = skip_tests + " or test_rewinds_on_failure" %}
-{% set skip_tests = skip_tests + " or test_run_urls" %}
-# E   FileNotFoundError: [Errno 2] No such file or directory: '\\tmp\\0.3487656377472621'
-{% set skip_tests = skip_tests + " or test_finishes_after_simple_upload" %}  # [win]
+    - typing_extensions >=4.8,<5
+    - opentelemetry-api >=1.43.0
+    - opentelemetry-sdk >=1.43.0
+    - opentelemetry-exporter-otlp-proto-http >=1.43.0
+    - python-xxhash >=3.0.0
+  run_constrained:
+    - botocore >=1.5.76
+    - weave >=0.52.41
+    - PyYAML >=6.0.0
+    - tornado >=6.5.0
+    - moviepy >=1.0.0
+    - imageio >=2.28.1
+    - plotly >=5.18.0
+    - sweeps >=0.2.0
 
 test:
   source_files:
@@ -146,10 +159,10 @@ about:
     - THIRDPARTY_PARQUET.yml
     - LICENSE
   summary: A CLI and library for interacting with the Weights and Biases API.
-  description:  |
-    WandB (short for \"Weights and Biases\") is a Python library that provides a set of tools 
-    for visualizing and tracking machine learning experiments. It is designed to make it easy 
-    to track the performance of machine learning models and experiments over time, and to 
+  description: |
+    WandB (short for \"Weights and Biases\") is a Python library that provides a set of tools
+    for visualizing and tracking machine learning experiments. It is designed to make it easy
+    to track the performance of machine learning models and experiments over time, and to
     collaborate with others on machine learning projects.
   doc_url: https://docs.wandb.ai
   dev_url: https://github.com/wandb/wandb
