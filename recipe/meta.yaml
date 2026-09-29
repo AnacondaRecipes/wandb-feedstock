@@ -70,8 +70,12 @@ requirements:
 # requres 'pytest-memray'
 {% set skip_tests = "test_opener_works_across_filesystem_boundaries" %}
 {% set skip_tests = skip_tests + " or test_md5_file_hashes_on_mounted_filesystem" %}
+# pyfakefs mmap emulation on mounted filesystems returns wrong bytes on py3.14
+{% set skip_tests = skip_tests + " or test_xxh128_file_hashes_on_mounted_filesystem" %}  # [py>313]
 # requires 'azure'
 {% set skip_tests = skip_tests + " or TestAzure" %}
+# requires 'sweeps' (wandb[sweeps] extra, not available on defaults)
+{% set skip_tests = skip_tests + " or TestWandbOptimizerAcceptance" %}
 # >           assert res == new_credentials["access_token"]
 # E           AssertionError: assert 'wb_at_39fdjsaknasd' == 'wb_at_kdflfo432'
 {% set skip_tests = skip_tests + " or test_refresh_credentials" %}
