@@ -54,6 +54,10 @@ requirements:
 {% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_launch" %}
 # requires 'moviepy'
 {% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_data_types.py" %}
+# requires 'boto3' and 'moto' (not available on defaults)
+{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_artifacts/test_references_s3.py" %}
+# imports the repo-internal 'tools' package, not shipped with the sdist
+{% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_telemetry_tool.py" %}
 # requires 'kfp' (not available on defaults)
 {% set ignore_tests = ignore_tests + " --ignore=tests/unit_tests/test_kfp.py" %}
 # requires 'looptime' (not available on defaults)
